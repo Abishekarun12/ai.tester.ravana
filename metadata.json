@@ -1,0 +1,8 @@
+{
+  "name": "AI Automation Testing Explorer",
+  "description": "Automated web application analysis tool that generates test scenarios, bug reports, and executive case studies from a single URL.",
+  "requestFramePermissions": [],
+  "majorCapabilities": [
+    "MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"
+  ]
+}
