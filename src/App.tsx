@@ -94,7 +94,7 @@ export default function App() {
     setResult(null);
     setLogs([]);
     addLog(`Initializing audit for target: ${url}`);
-    
+
     try {
       addLog("🕷️ Launching crawler...");
       await new Promise(r => setTimeout(r, 600));
@@ -104,9 +104,13 @@ export default function App() {
       await new Promise(r => setTimeout(r, 800));
       addLog("🤖 AI Agent: Mapping test surface and identifying edge cases...");
 
-      const response = await fetch('/api/analyze', {
+      const API_URL = process.env.REACT_APP_API_URL || "";
+
+      const response = await fetch(`${API_URL}/api/analyze`, {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: {
+          'Content-Type': 'application/json'
+        },
         body: JSON.stringify({ url })
       });
 
@@ -150,7 +154,7 @@ export default function App() {
             A Tester Companion <span className="text-blue-400">.ai</span>
           </span>
         </div>
-          <small className="text-blue-400">Developed by Ravana</small>
+        <small className="text-blue-400">Developed by Ravana</small>
         <div className="flex items-center gap-6">
           <div className="flex items-center gap-2">
             <span className={`w-2 h-2 rounded-full ${loading ? 'bg-orange-500 animate-pulse' : 'bg-green-500'} shadow-[0_0_8px_rgba(34,197,94,0.6)]`}></span>
@@ -165,7 +169,7 @@ export default function App() {
       </header>
 
       <main className="flex-1 flex flex-col lg:flex-row p-6 gap-6 z-10 overflow-hidden">
-        
+
         {/* Sidebar Controls */}
         <section id="sidebar" className="w-full lg:w-80 flex flex-col gap-6">
           {/* URL Input Glass Card */}
@@ -230,7 +234,7 @@ export default function App() {
             <div className="mt-4 p-3 bg-white/5 border border-white/5 rounded-xl">
               <p className="text-[9px] text-slate-500 uppercase tracking-tighter mb-2">Analysis Coverage</p>
               <div className="h-1 bg-white/10 rounded-full overflow-hidden">
-                <motion.div 
+                <motion.div
                   className="h-full bg-blue-500"
                   initial={{ width: 0 }}
                   animate={{ width: loading ? '75%' : result ? '100%' : '0%' }}
@@ -243,7 +247,7 @@ export default function App() {
 
         {/* Main Data Area */}
         <section className="flex-1 flex flex-col gap-6 overflow-hidden">
-          
+
           {/* Scorecards */}
           <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
             {[
@@ -274,7 +278,7 @@ export default function App() {
                   </div>
                   <h2 className="text-lg font-bold mb-2">Awaiting Target Selection</h2>
                   <p className="text-xs text-slate-500 max-w-sm">
-                    Enter an application URL to begin the AI-driven exploratory audit. 
+                    Enter an application URL to begin the AI-driven exploratory audit.
                     The agent will discover elements, map states, and detect vulnerabilities.
                   </p>
                 </motion.div>
@@ -291,11 +295,10 @@ export default function App() {
                       <button
                         key={tab}
                         onClick={() => setActiveTab(tab)}
-                        className={`px-6 py-2 text-[10px] font-bold uppercase tracking-widest rounded-lg transition-all cursor-pointer ${
-                          activeTab === tab 
-                            ? 'bg-blue-600 text-white shadow-lg shadow-blue-600/20' 
+                        className={`px-6 py-2 text-[10px] font-bold uppercase tracking-widest rounded-lg transition-all cursor-pointer ${activeTab === tab
+                            ? 'bg-blue-600 text-white shadow-lg shadow-blue-600/20'
                             : 'text-slate-400 hover:text-white'
-                        }`}
+                          }`}
                       >
                         {tab === 'strategy' ? 'Scenarios' : tab === 'bugs' ? 'Bug Sheet' : 'Case Study'}
                       </button>
@@ -317,9 +320,8 @@ export default function App() {
                             >
                               <div className="flex justify-between items-start mb-2">
                                 <span className="text-[10px] font-mono text-blue-400/70">{s.id}</span>
-                                <span className={`px-2 py-0.5 rounded text-[8px] font-bold uppercase ${
-                                  s.priority === 'P0' ? 'bg-orange-500/20 text-orange-400' : 'bg-blue-500/20 text-blue-400'
-                                }`}>
+                                <span className={`px-2 py-0.5 rounded text-[8px] font-bold uppercase ${s.priority === 'P0' ? 'bg-orange-500/20 text-orange-400' : 'bg-blue-500/20 text-blue-400'
+                                  }`}>
                                   {s.priority}
                                 </span>
                               </div>
@@ -333,112 +335,111 @@ export default function App() {
 
                       {activeTab === 'bugs' && (
                         <div className="overflow-x-auto">
-                        <table className="w-full text-left">
-                          <thead className="bg-white/5 text-[10px] uppercase font-bold text-slate-500 tracking-wider">
-                            <tr>
-                              <th className="px-6 py-4">Evidence</th>
-                              <th className="px-6 py-4">Component</th>
-                              <th className="px-6 py-4">Violation Details</th>
-                              <th className="px-6 py-4">Severity</th>
-                              <th className="px-6 py-4 text-right">Actions</th>
-                            </tr>
-                          </thead>
-                          <tbody className="divide-y divide-white/5">
-                            {result?.bugs.map((b, i) => (
-                              <motion.tr 
-                                key={b.id}
-                                initial={{ opacity: 0 }}
-                                animate={{ opacity: 1 }}
-                                transition={{ delay: i * 0.05 }}
-                                className="hover:bg-white/5 transition-colors group"
-                              >
-                                <td className="px-6 py-4">
-                                  <div className="relative w-24 h-16 bg-black/40 rounded-lg border border-white/10 overflow-hidden group-hover:border-blue-500/50 transition-colors">
-                                    <img 
-                                      src={b.screenshotUrl} 
-                                      alt={`Evidence ${b.id}`} 
-                                      className="w-full h-full object-cover opacity-70 group-hover:opacity-100 transition-opacity"
-                                      referrerPolicy="no-referrer"
-                                    />
-                                    <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent flex items-end p-1">
-                                      <span className="text-[8px] font-mono text-blue-300">{b.id}</span>
+                          <table className="w-full text-left">
+                            <thead className="bg-white/5 text-[10px] uppercase font-bold text-slate-500 tracking-wider">
+                              <tr>
+                                <th className="px-6 py-4">Evidence</th>
+                                <th className="px-6 py-4">Component</th>
+                                <th className="px-6 py-4">Violation Details</th>
+                                <th className="px-6 py-4">Severity</th>
+                                <th className="px-6 py-4 text-right">Actions</th>
+                              </tr>
+                            </thead>
+                            <tbody className="divide-y divide-white/5">
+                              {result?.bugs.map((b, i) => (
+                                <motion.tr
+                                  key={b.id}
+                                  initial={{ opacity: 0 }}
+                                  animate={{ opacity: 1 }}
+                                  transition={{ delay: i * 0.05 }}
+                                  className="hover:bg-white/5 transition-colors group"
+                                >
+                                  <td className="px-6 py-4">
+                                    <div className="relative w-24 h-16 bg-black/40 rounded-lg border border-white/10 overflow-hidden group-hover:border-blue-500/50 transition-colors">
+                                      <img
+                                        src={b.screenshotUrl}
+                                        alt={`Evidence ${b.id}`}
+                                        className="w-full h-full object-cover opacity-70 group-hover:opacity-100 transition-opacity"
+                                        referrerPolicy="no-referrer"
+                                      />
+                                      <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent flex items-end p-1">
+                                        <span className="text-[8px] font-mono text-blue-300">{b.id}</span>
+                                      </div>
                                     </div>
-                                  </div>
-                                </td>
-                                <td className="px-6 py-4 text-xs font-medium text-slate-300">
-                                  {b.component}
-                                </td>
-                                <td className="px-6 py-4">
-                                  <p className="text-xs text-white mb-1 group-hover:text-blue-300 transition-colors">{b.issue}</p>
-                                  <p className="text-[10px] text-slate-500 italic max-w-sm truncate">{b.steps}</p>
-                                </td>
-                                <td className="px-6 py-4">
-                                  <span className={`px-2 py-0.5 rounded text-[9px] font-bold uppercase border ${
-                                    ['Critical', 'High'].includes(b.severity) 
-                                      ? 'bg-rose-500/20 text-rose-400 border-rose-500/20' 
-                                      : 'bg-orange-500/20 text-orange-400 border-orange-500/20'
-                                  }`}>
-                                    {b.severity}
-                                  </span>
-                                </td>
-                                <td className="px-6 py-4 text-right">
-                                  <div className="flex justify-end gap-2">
-                                    <button 
-                                      onClick={() => copyToClipboard(`${b.id}: ${b.issue}\nSeverity: ${b.severity}\nSteps: ${b.steps}`, 'Bug Info')}
-                                      className="p-2 hover:bg-white/10 rounded-lg text-slate-400 hover:text-white transition-colors"
-                                      title="Copy Bug Details"
-                                    >
-                                      <FileText className="w-4 h-4" />
-                                    </button>
-                                    <button 
-                                      onClick={() => downloadImage(b.screenshotUrl, `${b.id}-evidence.png`)}
-                                      className="p-2 hover:bg-emerald-500/10 rounded-lg text-slate-400 hover:text-emerald-400 transition-colors"
-                                      title="Download Screenshot"
-                                    >
-                                      <Download className="w-4 h-4" />
-                                    </button>
-                                    <button 
-                                      onClick={() => copyToClipboard(b.screenshotUrl, 'Image URL')}
-                                      className="p-2 hover:bg-blue-500/10 rounded-lg text-slate-400 hover:text-blue-400 transition-colors"
-                                      title="Copy Image URL"
-                                    >
-                                      <Layers className="w-4 h-4" />
-                                    </button>
-                                  </div>
-                                </td>
-                              </motion.tr>
-                            ))}
-                          </tbody>
-                        </table>
-                      </div>
-                    )}
+                                  </td>
+                                  <td className="px-6 py-4 text-xs font-medium text-slate-300">
+                                    {b.component}
+                                  </td>
+                                  <td className="px-6 py-4">
+                                    <p className="text-xs text-white mb-1 group-hover:text-blue-300 transition-colors">{b.issue}</p>
+                                    <p className="text-[10px] text-slate-500 italic max-w-sm truncate">{b.steps}</p>
+                                  </td>
+                                  <td className="px-6 py-4">
+                                    <span className={`px-2 py-0.5 rounded text-[9px] font-bold uppercase border ${['Critical', 'High'].includes(b.severity)
+                                        ? 'bg-rose-500/20 text-rose-400 border-rose-500/20'
+                                        : 'bg-orange-500/20 text-orange-400 border-orange-500/20'
+                                      }`}>
+                                      {b.severity}
+                                    </span>
+                                  </td>
+                                  <td className="px-6 py-4 text-right">
+                                    <div className="flex justify-end gap-2">
+                                      <button
+                                        onClick={() => copyToClipboard(`${b.id}: ${b.issue}\nSeverity: ${b.severity}\nSteps: ${b.steps}`, 'Bug Info')}
+                                        className="p-2 hover:bg-white/10 rounded-lg text-slate-400 hover:text-white transition-colors"
+                                        title="Copy Bug Details"
+                                      >
+                                        <FileText className="w-4 h-4" />
+                                      </button>
+                                      <button
+                                        onClick={() => downloadImage(b.screenshotUrl, `${b.id}-evidence.png`)}
+                                        className="p-2 hover:bg-emerald-500/10 rounded-lg text-slate-400 hover:text-emerald-400 transition-colors"
+                                        title="Download Screenshot"
+                                      >
+                                        <Download className="w-4 h-4" />
+                                      </button>
+                                      <button
+                                        onClick={() => copyToClipboard(b.screenshotUrl, 'Image URL')}
+                                        className="p-2 hover:bg-blue-500/10 rounded-lg text-slate-400 hover:text-blue-400 transition-colors"
+                                        title="Copy Image URL"
+                                      >
+                                        <Layers className="w-4 h-4" />
+                                      </button>
+                                    </div>
+                                  </td>
+                                </motion.tr>
+                              ))}
+                            </tbody>
+                          </table>
+                        </div>
+                      )}
 
-                  {activeTab === 'case' && (
-                    <div className="prose prose-invert prose-sm max-w-none prose-headings:text-white prose-p:text-slate-400 prose-strong:text-blue-400 prose-blockquote:border-l-blue-600">
-                      <ReactMarkdown>{result?.caseStudy || ''}</ReactMarkdown>
-                    </div>
-                  )}
+                      {activeTab === 'case' && (
+                        <div className="prose prose-invert prose-sm max-w-none prose-headings:text-white prose-p:text-slate-400 prose-strong:text-blue-400 prose-blockquote:border-l-blue-600">
+                          <ReactMarkdown>{result?.caseStudy || ''}</ReactMarkdown>
+                        </div>
+                      )}
                     </div>
                   </div>
                 </motion.div>
               )}
             </AnimatePresence>
 
-          {/* Toast Notification */}
-          <AnimatePresence>
-            {notification && (
-              <motion.div
-                initial={{ opacity: 0, y: 50 }}
-                animate={{ opacity: 1, y: 0 }}
-                exit={{ opacity: 0, scale: 0.9 }}
-                className="fixed bottom-12 left-1/2 -translate-x-1/2 bg-blue-600 text-white px-6 py-3 rounded-full text-xs font-bold shadow-2xl flex items-center gap-3 z-[100]"
-              >
-                <Activity className="w-4 h-4" />
-                {notification}
-              </motion.div>
-            )}
-          </AnimatePresence>
-        </div>
+            {/* Toast Notification */}
+            <AnimatePresence>
+              {notification && (
+                <motion.div
+                  initial={{ opacity: 0, y: 50 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0, scale: 0.9 }}
+                  className="fixed bottom-12 left-1/2 -translate-x-1/2 bg-blue-600 text-white px-6 py-3 rounded-full text-xs font-bold shadow-2xl flex items-center gap-3 z-[100]"
+                >
+                  <Activity className="w-4 h-4" />
+                  {notification}
+                </motion.div>
+              )}
+            </AnimatePresence>
+          </div>
         </section>
       </main>
 
