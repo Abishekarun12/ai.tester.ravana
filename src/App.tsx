@@ -97,6 +97,7 @@ export default function App() {
 
     try {
       addLog("🕷️ Launching crawler...");
+      console.log("Gemini Key Exists:", !!process.env.GEMINI_API_KEY);
       await new Promise(r => setTimeout(r, 600));
       addLog("🔍 Discovering interactive elements...");
       await new Promise(r => setTimeout(r, 800));
