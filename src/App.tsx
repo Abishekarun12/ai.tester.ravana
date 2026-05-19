@@ -119,7 +119,18 @@ export default function App() {
       }
 
       const data = await response.json();
-      setResult(data);
+
+      console.log("API Response:", data);
+      addLog(`Response: ${JSON.stringify(data).slice(0, 200)}...`);
+
+      setResult({
+        scenarios: data.scenarios || [],
+        bugs: data.bugs || [],
+        caseStudy: data.caseStudy || "No report generated"
+      });
+
+      addLog(`Scenarios found: ${data.scenarios?.length || 0}`);
+      addLog(`Bugs found: ${data.bugs?.length || 0}`);
       addLog("✅ Audit complete. Reports generated.");
     } catch (err: any) {
       addLog(`❌ Error: ${err.message}`);
@@ -296,8 +307,8 @@ export default function App() {
                         key={tab}
                         onClick={() => setActiveTab(tab)}
                         className={`px-6 py-2 text-[10px] font-bold uppercase tracking-widest rounded-lg transition-all cursor-pointer ${activeTab === tab
-                            ? 'bg-blue-600 text-white shadow-lg shadow-blue-600/20'
-                            : 'text-slate-400 hover:text-white'
+                          ? 'bg-blue-600 text-white shadow-lg shadow-blue-600/20'
+                          : 'text-slate-400 hover:text-white'
                           }`}
                       >
                         {tab === 'strategy' ? 'Scenarios' : tab === 'bugs' ? 'Bug Sheet' : 'Case Study'}
@@ -376,8 +387,8 @@ export default function App() {
                                   </td>
                                   <td className="px-6 py-4">
                                     <span className={`px-2 py-0.5 rounded text-[9px] font-bold uppercase border ${['Critical', 'High'].includes(b.severity)
-                                        ? 'bg-rose-500/20 text-rose-400 border-rose-500/20'
-                                        : 'bg-orange-500/20 text-orange-400 border-orange-500/20'
+                                      ? 'bg-rose-500/20 text-rose-400 border-rose-500/20'
+                                      : 'bg-orange-500/20 text-orange-400 border-orange-500/20'
                                       }`}>
                                       {b.severity}
                                     </span>
